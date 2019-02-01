@@ -16,3 +16,6 @@ or
     source functions.sh
     
 If you don't run BASH, for the moment, you're on your own.
+
+# Fitness for use
+I guarantee nothing about the fitness of this project for any purpose, least of all actual software development. I can't even begin to imagine how one might use it in an environment where code review is expected (though Kent Beck would probably argue that the entire point of Limbo is not to do blocking code reviews).

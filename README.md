@@ -6,3 +6,13 @@ Git commit messages are eschewed by this process, as they slow the rate of TCR. 
 
 In cases where a commit message would normally be used to annotate e.g., a feature or bugfix, the suggested alternative is an annotated tag. Given the core tenet of Limbo is to never push a commit that will cause problems to others (including users), the concept of releases (a typical use of annotated tags, usually reserved for a vetted, "blessed" version of the code) should be able to be applied to any commit, arbitrarily, and as needed.
 
+# How to use
+If you run the Bourne again Shell (BASH), simply source functions.sh:
+
+    . functions.sh
+    
+or
+
+    source functions.sh
+    
+If you don't run BASH, for the moment, you're on your own.

@@ -5,7 +5,7 @@ function runTests() {
 }
 
 function wip() {
-    git add . && git commit -m "wip"
+    git add . && git commit -m "Limbo-ing! See tags/releases for what you'd normally expect in a commit message."
 }
 
 function revert() {

@@ -7,15 +7,17 @@ Git commit messages are eschewed by this process, as they slow the rate of TCR. 
 In cases where a commit message would normally be used to annotate e.g., a feature or bugfix, the suggested alternative is an annotated tag. Given the core tenet of Limbo is to never push a commit that will cause problems to others (including users), the concept of releases (a typical use of annotated tags, usually reserved for a vetted, "blessed" version of the code) should be able to be applied to any commit, arbitrarily, and as needed.
 
 # How to use
-If you run the Bourne again Shell (BASH), simply source functions.sh:
+If you run the Bourne again Shell (Bash), simply source `bash_limbo`:
 
-    . functions.sh
+    . bash_limbo
     
 or
 
-    source functions.sh
-    
-If you don't run BASH, for the moment, you're on your own.
+    source bash_limbo
+
+I soft-link this into my home directory as a `.bash_limbo` and source from `.bashrc`.
+
+If you don't run the bash shell, for the moment, you're on your own.
 
 # Fitness for use
 I guarantee nothing about the fitness of this project for any purpose, least of all actual software development. I can't even begin to imagine how one might use it in an environment where code review is expected (though Kent Beck would probably argue that the entire point of Limbo is not to do blocking code reviews).

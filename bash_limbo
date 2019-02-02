@@ -24,7 +24,7 @@ function tcr-sync() {
         reset
 
         tcr
-        TCR_RET=$?
+        local TCR_RET=$?
 
         while ( ! git pull -q --rebase ); do
             echo "Press <enter> to re-try the pull."

@@ -21,7 +21,7 @@ tcrSync() (
             return $TESTS_PASS
         fi
 
-        git add . && git commit -q -m "Limbo-ing! See tags/releases for what you'd normally expect in a commit message."
+        git add . && git commit -m "Limbo-ing! See tags/releases for what you'd normally expect in a commit message."
     }
 
     reset

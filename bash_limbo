@@ -31,8 +31,7 @@ tcrSync() {
         local TCR_RET=$?
 
         while ( git rev-parse master@{upstream} &>/dev/null && ! git pull -q --rebase ); do
-            echo "Press <enter> to re-try the pull."
-            read
+            read -p "Press <enter> to re-try the pull." REPLY
         done
 
         local PULL_RET=$?

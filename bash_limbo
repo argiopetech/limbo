@@ -1,12 +1,13 @@
 #!/bin/bash
 
 function runTests() {
-    stack test --silent --fast 2>/dev/null
+    sh -c "$1" &>/dev/null
+    return;
 }
 
 function wip() {
     local COMMIT_MESSAGE="Limbo-ing! See tags/releases for what you'd normally expect in a commit message."
-    git add . && git commit -m ${COMMIT_MESSAGE}
+    git add . && git commit -m "${COMMIT_MESSAGE}"
 }
 
 function revert() {
@@ -14,7 +15,8 @@ function revert() {
 }
 
 function tc() {
-    runTests || ( local RET=$?; stack test; return $RET; ) && echo && wip
+    #    runTests || ( local RET=$?; stack test; return $RET; ) && echo && wip
+    return;
 }
 
 function tcr() {
@@ -27,13 +29,20 @@ function tcr-sync() {
         tcr
         local TCR_RET=$?
 
-        while ( ! git pull -q --rebase ); do
+        while ( git rev-parse master@{upstream} &>/dev/null && ! git pull -q --rebase ); do
             echo "Press <enter> to re-try the pull."
             read
         done
+
+        local PULL_RET=$?
         
-        if [[ $TCR_RET -eq 0 ]]; then
-            runTests >/dev/null || ( clear; runTests ; false; ) && git push
+        if [ $TCR_RET -eq 0 -a $PULL_RET -eq 0 ]; then
+            # If the tests passed the first time, and a pull was performed, test
+            # to ensure the rebase didn't break enything
+            #
+            # Try running the tests silently, then run them loudly if they fail
+            # Push only if tests pass on the first go
+            runTests &>/dev/null || ( clear; runTests ; false; ) && git push
         fi
 }
 

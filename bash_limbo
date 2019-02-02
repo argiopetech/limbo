@@ -81,7 +81,7 @@ limbo() {
     local TEST_COMMAND=${1-"${DOTLIMBO_COMMAND}"}
 
     if [ -n "$TEST_COMMAND" ]; then
-        echo "Usage: "
+        echo "Usage: limbo \"<command to run tests>\""
         exit 1
     fi
     

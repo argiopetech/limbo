@@ -69,10 +69,21 @@ tcrSync() (
 )
 
 limbo() {
+    local DOTLIMBO_COMMAND
+
     if [ ! -d ".git" ]; then
         echo "You must be in the top level of a git repository to use limbo"
         exit 1
-    fi;
+    fi
+
+    [ -e ".limbo" ] && DOTLIMBO_COMMAND=$(cat .limbo)
+
+    local TEST_COMMAND=${1-"${DOTLIMBO_COMMAND}"}
+
+    if [ -n "$TEST_COMMAND" ]; then
+        echo "Usage: "
+        exit 1
+    fi
     
     while : ; do
         tcrSync "$@"

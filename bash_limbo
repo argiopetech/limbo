@@ -46,10 +46,10 @@ tcrSync() (
     LOCAL_REV=$(git rev-parse '@')
 
     
-    [ $HAS_UPSTREAM -eq 0 ] && [ "$LOCAL_REV" != "$REMOTE_REV" ]
+    [ $HAS_UPSTREAM -eq 0 ] && [ $REACHED_UPSTREAM -eq 0 ] && [ "$LOCAL_REV" != "$REMOTE_REV" ]
     local NEEDS_PULL=$?
     
-    while ( [ $REACHED_UPSTREAM -eq 0 ] && [ $NEEDS_PULL -eq 0 ] && ! git pull -q --rebase --ff-only );
+    while ( [ $NEEDS_PULL -eq 0 ] && ! git pull -q --rebase --ff-only );
     do
         read -r -p "Press <enter> to re-try the pull."
     done

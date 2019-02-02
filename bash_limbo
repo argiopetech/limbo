@@ -20,7 +20,8 @@ function tc() {
 }
 
 function tcr() {
-    tc || revert
+    # Either test, commmit, and return true, or revert and return false.
+    tc || ( revert; false; )
 }
 
 function tcr-sync() {
@@ -38,7 +39,10 @@ function tcr-sync() {
         
         if [ $TCR_RET -eq 0 -a $PULL_RET -eq 0 ]; then
             # If the tests passed the first time, and a pull was performed, test
-            # to ensure the rebase didn't break enything
+            # to ensure the rebase didn't break enything.
+            #
+            # Pulls are assumed to always be tested and working, so there's no
+            # need to run the tests if we only pull.
             #
             # Try running the tests silently, then run them loudly if they fail
             # Push only if tests pass on the first go

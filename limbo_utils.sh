@@ -58,3 +58,13 @@ function squash() {
 
     git rebase -i develop "$BRANCH"
 }
+
+
+# Reloads the limbo functions library and runs tcr-sync automatically any time a file is changed
+#
+# Due to -d flag, this does work properly when new files are added.
+function tcr-loop() {
+    while :; do
+        git ls-files | entr -dcs "source bash_limbo ; tcr-sync"
+    done
+}

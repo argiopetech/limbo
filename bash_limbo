@@ -5,7 +5,8 @@ function runTests() {
 }
 
 function wip() {
-    git add . && git commit -m "Limbo-ing! See tags/releases for what you'd normally expect in a commit message."
+    local COMMIT_MESSAGE="Limbo-ing! See tags/releases for what you'd normally expect in a commit message."
+    git add . && git commit -m ${COMMIT_MESSAGE}
 }
 
 function revert() {

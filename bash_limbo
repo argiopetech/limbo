@@ -1,74 +1,81 @@
 #!/bin/bash
 
-runTests() {
-    eval "${1}" 2>/dev/null
-    return;
-}
+tcrSync() (
+    local TEST_COMMAND=${1}
+    
+    runTests() {
+        eval "${TEST_COMMAND}" 2>/dev/null
+        return;
+    }
 
-wip() {
-    local COMMIT_MESSAGE="Limbo-ing! See tags/releases for what you'd normally expect in a commit message."
-    git add . && git commit -m "${COMMIT_MESSAGE}"
-}
+    wip() {
+        local COMMIT_MESSAGE="Limbo-ing! See tags/releases for what you'd normally expect in a commit message."
+        git add . && git commit -m "${COMMIT_MESSAGE}"
+    }
 
-revert() {
-    git reset --hard
-}
+    revert() {
+        git reset --hard
+    }
 
-tc() {
-    #    runTests || ( local RET=$?; stack test; return $RET; ) && echo && wip
-    return;
-}
+    tc() {
+        runTests || ( local RET=$?; eval "${TEST_COMMAND}"; return $RET; ) && echo && wip
+        return;
+    }
 
-tcr() {
-    # Either test, commmit, and return true, or revert and return false.
-    tc || ( revert; false; )
-}
+    tcr() {
+        # Either test, commmit, and return true, or revert and return false.
+        tc || ( revert; false; )
+    }
 
-tcrSync() {
-        reset
+    reset
 
-        tcr
-        local TCR_RET=$?
+    tcr
+    local TCR_RET=$?
 
-        # Update the remote. This works even if there is no remote.
-        git remote update
-        local REACHED_UPSTREAM=$?
-        
-        # Try to find the upstream remote hash
+    # Update the remote. This works even if there is no remote.
+    git remote update
+    local REACHED_UPSTREAM=$?
+    
+    # Try to find the upstream remote hash
+    #
+    # If an upstream exists, this prints the hash and returns true.
+    # If no upstream exists, this errors to /dev/null and returns false.
+    local REMOTE_REV
+    REMOTE_REV=$(git rev-parse '@{upstream}' 2>/dev/null)
+    local HAS_UPSTREAM=$?
+
+    local LOCAL_REV
+    LOCAL_REV=$(git rev-parse '@')
+
+    
+    [ $HAS_UPSTREAM -eq 0 ] && [ "$LOCAL_REV" != "$REMOTE_REV" ]
+    local NEEDS_PULL=$?
+    
+    while ( [ $REACHED_UPSTREAM -eq 0 ] && [ $NEEDS_PULL -eq 0 ] && ! git pull -q --rebase --ff-only );
+    do
+        read -r -p "Press <enter> to re-try the pull."
+    done
+
+    if [ $TCR_RET -eq 0 ] && [ $NEEDS_PULL -eq 0 ]; then
+        # If the tests passed the first time, and a push can be performed, test to ensure the
+        # rebase didn't break enything.
         #
-        # If an upstream exists, this prints the hash and returns true.
-        # If no upstream exists, this errors to /dev/null and returns false.
-        local REMOTE_REV
-        REMOTE_REV=$(git rev-parse '@{upstream}' 2>/dev/null)
-        local HAS_UPSTREAM=$?
-
-        local LOCAL_REV=$(git rev-parse '@')
-
-        
-        [ $HAS_UPSTREAM -eq 0 ] && [ "$LOCAL_REV" != "$REMOTE_REV" ]
-        local NEEDS_PULL=$?
-        
-        while ( [REACHED_UPSTREAM -eq 0]
-             && [ $NEEDS_PULL -eq 0 ]
-             && ! git pull -q --rebase --ff-only ); do
-            read -r -p "Press <enter> to re-try the pull."
-        done
-
-        if [ $TCR_RET -eq 0 ] && [ $NEEDS_PULL -eq 0 ]; then
-            # If the tests passed the first time, and a push can be performed, test to ensure the
-            # rebase didn't break enything.
-            #
-            # Pulls are assumed to always be tested and working, so there's no need to run the tests
-            # if we only pull.
-            #
-            # Try running the tests silently, then run them loudly if they fail.
-            runTests &>/dev/null || ( clear; runTests ; false; ) && git push
-        fi
-}
+        # Pulls are assumed to always be tested and working, so there's no need to run the tests
+        # if we only pull.
+        #
+        # Try running the tests silently, then run them loudly if they fail.
+        runTests &>/dev/null || ( clear; runTests ; false; ) && git push
+    fi
+)
 
 limbo() {
+    if [ ! -d ".git" ]; then
+        echo "You must be in the top level of a git repository to use limbo"
+        exit 1
+    fi;
+    
     while : ; do
-        tcrSync
+        tcrSync "$@"
         
         echo
         read -rs -p "<enter> to test && commit || revert "

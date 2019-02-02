@@ -7,22 +7,21 @@ tcrSync() (
         eval "${TEST_COMMAND}" 2>/dev/null
     }
 
-    wip() {
-        local COMMIT_MESSAGE="Limbo-ing! See tags/releases for what you'd normally expect in a commit message."
-        git add . && git commit -q -m "${COMMIT_MESSAGE}"
-    }
-
     revert() {
         git reset --hard
     }
 
-    tc() {
-        runTests || ( local RET=$?; eval "${TEST_COMMAND}"; return $RET; ) && echo && wip
-    }
-
     tcr() {
         # Either test, commmit, and return true, or revert and return false.
-        tc || ( revert; false; )
+        runTests
+        local TESTS_PASS=$?
+
+        if [ $TESTS_PASS -ne 0 ]; then
+            revert
+            return $TESTS_PASS
+        fi
+
+        git add . && git commit -q -m "Limbo-ing! See tags/releases for what you'd normally expect in a commit message."
     }
 
     reset

@@ -38,20 +38,21 @@ tcrSync() {
         #
         # If an upstream exists, this prints the hash and returns true.
         # If no upstream exists, this errors to /dev/null and returns false.
-        local REMOTE_REV=$(git rev-parse @{upstream} 2>/dev/null)
+        local REMOTE_REV
+        REMOTE_REV=$(git rev-parse '@{upstream}' 2>/dev/null)
         local HAS_UPSTREAM=$?
 
-        local LOCAL_REV=$(git rev-parse @)
+        local LOCAL_REV=$(git rev-parse '@')
 
         
-        [ -n "$REMOTE_REV" -a "$LOCAL_REV" != "$REMOTE_REV" ]
+        [ $HAS_UPSTREAM -eq 0 ] && [ "$LOCAL_REV" != "$REMOTE_REV" ]
         local NEEDS_PULL=$?
         
         while ( [ $NEEDS_PULL -eq 0 ] && ! git pull -q --rebase --ff-only ); do
-            read -p "Press <enter> to re-try the pull." REPLY
+            read -r -p "Press <enter> to re-try the pull."
         done
 
-        if [ $TCR_RET -eq 0 -a $NEEDS_PULL -eq 0 ]; then
+        if [ $TCR_RET -eq 0 ] && [ $NEEDS_PULL -eq 0 ]; then
             # If the tests passed the first time, and a push can be performed, test to ensure the
             # rebase didn't break enything.
             #
@@ -68,6 +69,6 @@ limbo() {
         tcrSync
         
         echo
-        read -s -p "<enter> to test && commit || revert "
+        read -rs -p "<enter> to test && commit || revert "
     done
 }

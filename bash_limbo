@@ -10,7 +10,7 @@ tcrSync() (
 
     wip() {
         local COMMIT_MESSAGE="Limbo-ing! See tags/releases for what you'd normally expect in a commit message."
-        git add . && git commit -m "${COMMIT_MESSAGE}"
+        git add . && git commit -q -m "${COMMIT_MESSAGE}"
     }
 
     revert() {

@@ -30,24 +30,35 @@ tcrSync() {
         tcr
         local TCR_RET=$?
 
-        git rev-parse master@{upstream} &>/dev/null
-        local CAN_PULL=$?
+        # Update the remote. This works even if there is no remote.
+        git remote update
+        local REACHED_UPSTREAM=$?
         
-        while ( [ $CAN_PULL -eq 0 ] && ! git pull -q --rebase ); do
+        # Try to find the upstream remote hash
+        #
+        # If an upstream exists, this prints the hash and returns true.
+        # If no upstream exists, this errors to /dev/null and returns false.
+        local REMOTE_REV=$(git rev-parse @{upstream} 2>/dev/null)
+        local HAS_UPSTREAM=$?
+
+        local LOCAL_REV=$(git rev-parse @)
+
+        
+        [ -n "$REMOTE_REV" -a "$LOCAL_REV" != "$REMOTE_REV" ]
+        local NEEDS_PULL=$?
+        
+        while ( [ $NEEDS_PULL -eq 0 ] && ! git pull -q --rebase --ff-only ); do
             read -p "Press <enter> to re-try the pull." REPLY
         done
 
-        local PULL_RET=$?
-        
-        if [ $TCR_RET -eq 0 -a $PULL_RET -eq 0 ]; then
-            # If the tests passed the first time, and a pull was performed, test
-            # to ensure the rebase didn't break enything.
+        if [ $TCR_RET -eq 0 -a $NEEDS_PULL -eq 0 ]; then
+            # If the tests passed the first time, and a push can be performed, test to ensure the
+            # rebase didn't break enything.
             #
-            # Pulls are assumed to always be tested and working, so there's no
-            # need to run the tests if we only pull.
+            # Pulls are assumed to always be tested and working, so there's no need to run the tests
+            # if we only pull.
             #
-            # Try running the tests silently, then run them loudly if they fail
-            # Push only if tests pass on the first go
+            # Try running the tests silently, then run them loudly if they fail.
             runTests &>/dev/null || ( clear; runTests ; false; ) && git push
         fi
 }

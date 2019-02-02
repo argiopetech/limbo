@@ -1,30 +1,30 @@
 #!/bin/bash
 
-function runTests() {
-    sh -c "$1" &>/dev/null
+runTests() {
+    eval "${1}" 2>/dev/null
     return;
 }
 
-function wip() {
+wip() {
     local COMMIT_MESSAGE="Limbo-ing! See tags/releases for what you'd normally expect in a commit message."
     git add . && git commit -m "${COMMIT_MESSAGE}"
 }
 
-function revert() {
+revert() {
     git reset --hard
 }
 
-function tc() {
+tc() {
     #    runTests || ( local RET=$?; stack test; return $RET; ) && echo && wip
     return;
 }
 
-function tcr() {
+tcr() {
     # Either test, commmit, and return true, or revert and return false.
     tc || ( revert; false; )
 }
 
-function tcr-sync() {
+tcrSync() {
         reset
 
         tcr
@@ -50,9 +50,9 @@ function tcr-sync() {
         fi
 }
 
-function limbo() {
+limbo() {
     while : ; do
-        tcr-sync
+        tcrSync
         
         echo
         read -s -p "<enter> to test && commit || revert "

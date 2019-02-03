@@ -17,7 +17,7 @@ tcrSync() (
         local TESTS_PASS=$?
 
         if [ $TESTS_PASS -ne 0 ]; then
-            clear
+            reset
             
             echo "Reverting:"
             eval ${TEST_COMMAND}
@@ -88,10 +88,10 @@ limbo() {
         echo -e "\nAlternatively, you can put your test command in \".limbo\"."
         return 1
     fi
-    
+
     while : ; do
-        tcrSync "$@"
-        
+        tcrSync "${TEST_COMMAND}"
+
         echo
         read -rs -p "<enter> to test && commit || revert "
     done

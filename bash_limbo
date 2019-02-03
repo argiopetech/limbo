@@ -17,7 +17,12 @@ tcrSync() (
         local TESTS_PASS=$?
 
         if [ $TESTS_PASS -ne 0 ]; then
-            revert
+            clear
+            
+            echo "Reverting:"
+            eval ${TEST_COMMAND}
+            revert >/dev/null
+            
             return $TESTS_PASS
         fi
 

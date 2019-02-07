@@ -27,5 +27,7 @@ Alternatively, you can put your `<test command>` in the `.limbo` file in the top
 
 The contents of `<test command>` are evaluated with the `eval` builtin, which returns the return code of the last executed line. If you want a multi-line test command, you'll need to append `&&` to all but the last line.
 
+**Note:** In keeping with the "Limbo" philosophy, `limbo` runs `git push` after *every successful commit*.
+
 # Fitness for use
 I guarantee nothing about the fitness of this project for any purpose, least of all actual software development. I can't even begin to imagine how one might use it in an environment where code review is expected (though Kent Beck would probably argue that the entire point of Limbo is not to do blocking code reviews).

@@ -28,6 +28,12 @@ tcrSync() (
 
         echo
         git add . && git commit -m "Limbo-ing! See tags/releases for what you'd normally expect in a commit message."
+        local COMMIT_RET=$?
+
+        if [ $COMMIT_RET -ne 0 ] && [ "`git rev-parse '@'`" != "`git rev-parse '@{upstream}'`" ];
+        then
+            git push
+        fi
     }
 
     clear

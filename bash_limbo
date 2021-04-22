@@ -87,6 +87,9 @@ limbo() {
 
     [ -e ".limbo" ] && DOTLIMBO_COMMAND=$(cat .limbo)
 
+
+    # Prefer the expansion of the $1 positional parameter to the
+    # DOTLIMBO_COMMAND when the former is not unset (see BASH :- operator)
     local TEST_COMMAND=${1-"${DOTLIMBO_COMMAND}"}
 
     if [ -z "$TEST_COMMAND" ]; then
